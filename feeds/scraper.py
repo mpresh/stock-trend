@@ -24,11 +24,14 @@ class Scraper:
     def get_key(self, item):
         """ Should be overriden """
         return item
-    
+
+    def make_request(self, request_item):
+        result = requests.get(request_url)
+        return result.text
+        
     def scrape(self):
         for item in self.data:
             request_url = self.request_url(item)
-            print(request_url)
-            result = requests.get(request_url)
-            item_key = self.get_key(site)
-            yield {item_key: self.parse(result.text)}
+            result = self.make_request(request_url)
+            item_key = self.get_key(item)
+            yield {item_key: self.parse(result)}

@@ -1,4 +1,5 @@
 import re
+import csv
 import requests
 from bs4 import BeautifulSoup
 from utils import remove_white_space, cleanup_int
@@ -15,13 +16,30 @@ class StockScraper(Scraper):
     def request_url(self, input):
         yahoo_url = YAHOO_SITE.format(input[1])
         return yahoo_url
+ 
 
     def get_key(self, input):
         return input[0]
 
-    def parse(self, text):
+    def make_request(self, request_item):
+        result = []
+        with requests.Session() as s:
+            download = s.get(request_item)
+
+            decoded_content = download.content.decode('utf-8')
+
+            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+            my_list = list(cr)
+            for row in my_list:
+                result.append(row)
+
+        return result
+    
+    def parse(self, input):
+        input = input[0]
+        print(input)
         data = {}
-        print(text)
+        data["price"] = input[4]
         return data
 
     
